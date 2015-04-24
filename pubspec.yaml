@@ -1,0 +1,11 @@
+name: shelf_buffer_request
+description: >
+  A middleware for shelf that buffers the request so its body can be read multiple times.
+version: 0.0.1
+author: Jonas Kello jonas.kello@gmail.com
+homepage: https://github.com/jonaskello
+dependencies:
+  shelf: ">=0.6.1+1 <0.7.0"
+  shelf_proxy: ">=0.1.0+2 <0.2.0"
+dev_dependencies:
+  unittest:
