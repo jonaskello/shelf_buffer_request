@@ -15,10 +15,11 @@ import 'package:shelf_buffer_request/shelf_buffer_request.dart';
 main() {
 
   Handler handler = const Pipeline()
-  .addMiddleware(new BufferRequestMiddleware().middleware)
+  .addMiddleware(bufferRequests())
   .addMiddleware(readBodyMiddleware)
   .addMiddleware(readBodyMiddleware)
   .addMiddleware(readBodyMiddleware)
+  .addMiddleware(logRequests())
   .addHandler((request) => new Response.ok("Got it!"));
 
   io.serve(handler, InternetAddress.ANY_IP_V4, 1234).then((server) {

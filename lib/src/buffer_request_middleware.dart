@@ -7,19 +7,14 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:shelf/shelf.dart';
 
-class BufferRequestMiddleware {
 
-  Middleware get middleware => _createHandler;
-
-  Handler _createHandler(Handler innerHandler) {
-    return (Request request) => _handle(request, innerHandler);
-  }
-
-  Future<Response> _handle(Request request, Handler innerHandler) {
-    var bufferedRequest = new BufferedRequest(request);
-    return innerHandler(bufferedRequest);
-  }
-
+Middleware bufferRequests() {
+  return (innerHandler) {
+    return (request) {
+      var bufferedRequest = new BufferedRequest(request);
+      return innerHandler(bufferedRequest);
+    };
+  };
 }
 
 class BufferedRequest implements Request {
