@@ -9,6 +9,7 @@ A simple usage example:
     main() {
 
       Handler handler = const Pipeline()
+      .addMiddleware(logRequests())
       .addMiddleware(bufferRequests())
       .addMiddleware(readBodyMiddleware)
       .addMiddleware(readBodyMiddleware)
