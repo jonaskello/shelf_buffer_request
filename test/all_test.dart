@@ -3,19 +3,26 @@
 
 library shelf_buffer_request.test;
 
+import 'package:shelf/shelf.dart';
 import 'package:unittest/unittest.dart';
 import 'package:shelf_buffer_request/shelf_buffer_request.dart';
 
 main() {
-  group('A group of tests', () {
-    Awesome awesome;
+
+  group('Middleware test grouyp', () {
+
+    Middleware middleware;
+    Handler innerHandler = (Request req) => new Response.ok("Got it!");
 
     setUp(() {
-      awesome = new Awesome();
+      middleware = bufferRequests();
     });
 
-    test('First Test', () {
-      expect(awesome.isAwesome, isTrue);
+    test('Simple Request', () {
+      var handler = middleware(innerHandler);
+      var resp = handler(new Request("POST", Uri.parse("http://localhost/index.html")));
+      expect(resp, isNotNull);
     });
   });
+
 }
