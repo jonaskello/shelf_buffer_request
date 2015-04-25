@@ -6,21 +6,27 @@ A middleware for shelf that buffers the request so its body can be read multiple
 
 A simple usage example:
 
-    import 'dart:io';
-    import 'package:shelf/shelf.dart';
-    import 'package:shelf/shelf_io.dart' as io;
-    import 'package:shelf_buffer_request/shelf_buffer_request.dart';
-
     main() {
-        Handler handler = const Pipeline()
-        .addMiddleware(new BufferRequestMiddleware().middleware)
-        .addHandler(firstMiddlewareThatReadsBody);
-        .addHandler(secondMiddlewareThatReadsBody);
-        .addHandler(handlerThatReadsBody);
 
-        io.serve(handler, InternetAddress.ANY_IP_V4, 1234).then((server) {
+      Handler handler = const Pipeline()
+      .addMiddleware(new BufferRequestMiddleware().middleware)
+      .addMiddleware(readBodyMiddleware)
+      .addMiddleware(readBodyMiddleware)
+      .addMiddleware(readBodyMiddleware)
+      .addHandler((request) => new Response.ok("Got it!"));
+
+      io.serve(handler, InternetAddress.ANY_IP_V4, 1234).then((server) {
         print('Serving at http://${server.address.host}:${server.port}');
-        });
+      });
+
+    }
+
+    Handler readBodyMiddleware(Handler innerHandler) {
+      return (Request request) async {
+        var body = await request.read().toList();
+        print("The body size was ${body.length}");
+        return innerHandler(request);
+      };
     }
 
 ## Features and bugs

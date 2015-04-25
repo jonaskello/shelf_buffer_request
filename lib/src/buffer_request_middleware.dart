@@ -28,32 +28,23 @@ class BufferedRequest implements Request {
 
   BufferedRequest(this._inner);
 
-  List<List<int>> _buffer = <List<int>>[];
-  Completer<List<List<int>>> _completer = new Completer<List<List<int>>>();
+  List<List<int>> _buffer;
+  bool _isBuffered = false;
 
   Stream<List<int>> read() {
 
-    if (_completer.isCompleted == false) {
+    if (!_isBuffered) {
+      _isBuffered = true;
       _buffer = new List<List<int>>();
       var s = _inner.read();
-      var s3 = new Stream.fromFuture(_bufferStream(s));
-      return s3;
+      var s2 = s.map((e) {
+        _buffer.add(e);
+        return e;
+      });
+      return s2;
     }
     return new Stream.fromIterable(_buffer);
 
-  }
-
-  Future<List<List<int>>> _bufferStream(Stream s) {
-    s.listen(
-            (List<int> data) {
-          _buffer.add(data);
-        },
-        onError: _completer.completeError,
-        onDone: () {
-          _completer.complete(_buffer);
-        },
-        cancelOnError: true);
-    return _completer.future;
   }
 
   Map<String, Object> get context => _inner.context;
@@ -85,6 +76,5 @@ class BufferedRequest implements Request {
   Uri get url => _inner.url;
 
   Future<String> readAsString([Encoding encoding]) => _inner.readAsString(encoding);
-
 
 }
